@@ -28,6 +28,24 @@ class LoanMonitoring extends Component
         $this->resetPage();
     }
 
+    public function returnBook(int $loanId): void
+    {
+        $loan = Loan::findOrFail($loanId);
+
+        if ($loan->status === LoanStatus::Returned) {
+            session()->flash('error', 'This loan has already returned.');
+
+            return;
+        }
+
+        $loan->update([
+            'status' => LoanStatus::Returned,
+            'return_date' => today(),
+        ]);
+
+        session()->flash('success', 'Book returned successfully.');
+    }
+
     public function render(): View
     {
         $today = today();
