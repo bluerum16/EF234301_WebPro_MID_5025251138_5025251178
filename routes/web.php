@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Role;
+use App\Http\Controllers\BookController;
 use App\Livewire\Librarian\BookManagement;
 use App\Livewire\Librarian\LoanMonitoring;
 use Illuminate\Http\Request;
@@ -33,8 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware('role:member')->name('member.')->group(function () {
-        Route::view('books', 'coming-soon', ['title' => 'Book Catalog'])->name('books.index');
-        Route::view('books/{book}', 'coming-soon', ['title' => 'Book Details'])->name('books.show');
+        Route::get('books', [BookController::class, 'index'])->name('books.index');
+        Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
         Route::view('my/reservations', 'coming-soon', ['title' => 'My Reservations'])->name('reservations.index');
         Route::view('my/loans', 'coming-soon', ['title' => 'My Borrowings'])->name('loans.index');
     });
