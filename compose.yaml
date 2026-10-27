@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    container_name: mybook-db
+    environment:
+      POSTGRES_DB: mybook
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - mybook-db-data:/var/lib/postgresql/data
+
+volumes:
+  mybook-db-data:
