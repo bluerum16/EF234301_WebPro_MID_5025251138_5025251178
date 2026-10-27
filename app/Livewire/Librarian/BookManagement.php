@@ -2,15 +2,15 @@
 
 namespace App\Livewire\Librarian;
 
+use App\Enums\LoanStatus;
+use App\Enums\ReservationStatus;
 use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Enums\LoanStatus;
-use App\Enums\ReservationStatus;
-use Illuminate\Validation\Rule;
 
 #[Title('Book Management')]
 class BookManagement extends Component
@@ -18,13 +18,21 @@ class BookManagement extends Component
     use WithPagination;
 
     public string $search = '';
+
     public ?int $selectedCategory = null;
+
     public ?int $editingBookId = null;
+
     public string $title = '';
+
     public string $author = '';
+
     public string $isbn = '';
+
     public string $description = '';
+
     public int $total_stock = 1;
+
     public ?int $categories_id = null;
 
     public function updatingSearch(): void
@@ -40,19 +48,19 @@ class BookManagement extends Component
     public function render(): View
     {
         $books = Book::query()
-        ->with('category')
-        ->when($this->search !== '', function ($query){
-            $query->where(function ($q) {
-                $q->where('title', 'like', '%'.$this->search.'%')
-                ->orWhere('author','like', '%'.$this->search.'%')
-                ->orWhere('isbn', 'like', '%'.$this->search.'%');
-            });
-        })
-        ->when($this->selectedCategory, function ($query) {
-            $query->where('categories_id', $this->selectedCategory);
-        })
-        ->latest('id')
-        ->paginate(10);
+            ->with('category')
+            ->when($this->search !== '', function ($query) {
+                $query->where(function ($q) {
+                    $q->where('title', 'like', '%'.$this->search.'%')
+                        ->orWhere('author', 'like', '%'.$this->search.'%')
+                        ->orWhere('isbn', 'like', '%'.$this->search.'%');
+                });
+            })
+            ->when($this->selectedCategory, function ($query) {
+                $query->where('categories_id', $this->selectedCategory);
+            })
+            ->latest('id')
+            ->paginate(10);
 
         return view('livewire.librarian.book-management', [
             'books' => $books,
@@ -63,9 +71,9 @@ class BookManagement extends Component
     protected function rules(): array
     {
         return [
-            'title' => ['required','string','max:255'],
-            'author' => ['required','string','max:255'],
-            'isbn' => ['required','string','max:30', Rule::unique('books', 'isbn')->ignore($this->editingBookId)],
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
+            'isbn' => ['required', 'string', 'max:30', Rule::unique('books', 'isbn')->ignore($this->editingBookId)],
             'description' => ['nullable', 'string'],
             'total_stock' => ['required', 'integer', 'min:1'],
             'categories_id' => ['required', 'exists:categories,id'],
@@ -79,7 +87,7 @@ class BookManagement extends Component
         $this->resetValidation();
     }
 
-    public function edit(int $id): void 
+    public function edit(int $id): void
     {
         $book = Book::findOrFail($id);
 
@@ -101,10 +109,10 @@ class BookManagement extends Component
         if ($this->editingBookId) {
             $book = Book::findOrFail($this->editingBookId);
             $book->update($validated);
-            session()->flash('success','Book updated successfully.');
+            session()->flash('success', 'Book updated successfully.');
         } else {
             Book::create($validated);
-            session()->flash('success','Book created successfully.');
+            session()->flash('success', 'Book created successfully.');
         }
 
         $this->create();
@@ -119,10 +127,11 @@ class BookManagement extends Component
 
         if ($hasActiveLoans || $hasActiveReservations) {
             session()->flash('error', 'Cannot delete book, this book has active loans or reservations.');
+
             return;
         }
 
         $book->delete();
-        session()->flash('success','Book deleted successfully.');
+        session()->flash('success', 'Book deleted successfully.');
     }
 }
