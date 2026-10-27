@@ -68,6 +68,9 @@ class BookManagement extends Component
         ]);
     }
 
+    /**
+     * @return array<string, array<int, mixed>>
+     */
     protected function rules(): array
     {
         return [
