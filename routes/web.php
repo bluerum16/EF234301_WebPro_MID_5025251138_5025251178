@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\Role;
+use App\Livewire\Librarian\BookManagement;
+use App\Livewire\Librarian\LoanMonitoring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,9 +26,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware('role:librarian')->prefix('librarian')->name('librarian.')->group(function () {
-        Route::view('books', 'coming-soon', ['title' => 'Books'])->name('books.index');
+        Route::get('books', BookManagement::class)->name('books.index');
         Route::view('reservations', 'coming-soon', ['title' => 'Reservations'])->name('reservations.index');
-        Route::view('loans', 'coming-soon', ['title' => 'Loans'])->name('loans.index');
+        Route::get('loans', LoanMonitoring::class)->name('loans.index');
         Route::view('loans/create', 'coming-soon', ['title' => 'Walk-In Borrowing'])->name('loans.create');
     });
 
