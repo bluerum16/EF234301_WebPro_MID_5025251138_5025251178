@@ -1,6 +1,11 @@
 <?php
 
 use App\Enums\Role;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LibrarianController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\ReportController;
 use App\Livewire\Librarian\BookManagement;
 use App\Livewire\Librarian\LoanMonitoring;
 use App\Livewire\Librarian\ReservationManagement;
@@ -20,11 +25,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::view('dashboard', 'dashboard')->name('dashboard');
-        Route::view('librarians', 'coming-soon', ['title' => 'Librarians'])->name('librarians.index');
-        Route::view('members', 'coming-soon', ['title' => 'Members'])->name('members.index');
-        Route::view('categories', 'coming-soon', ['title' => 'Categories'])->name('categories.index');
-        Route::view('reports', 'coming-soon', ['title' => 'Reports'])->name('reports.index');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('librarians', LibrarianController::class);
+        Route::get('members', [MemberController::class, 'index'])->name('members.index');
+        Route::patch('members/{member}/toggle', [MemberController::class, 'toggle'])->name('members.toggle');
+        Route::resource('categories', CategoryController::class);
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     });
 
     Route::middleware('role:librarian')->prefix('librarian')->name('librarian.')->group(function () {
