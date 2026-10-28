@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/src/Features/SupportPagination/views/*.blade.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-brand-50: #eff7fc;
+    --color-brand-100: #d9eafa;
+    --color-brand-200: #b3d6f0;
+    --color-brand-300: #7fb8e4;
+    --color-brand-400: #4a97d6;
+    --color-brand-500: #1674c0;
+    --color-brand-600: #0066b3;
+    --color-brand-700: #00538f;
+    --color-brand-800: #0a4570;
+    --color-brand-900: #0b385c;
+    --color-brand-950: #07243f;
+}
+
+@layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        @apply bg-zinc-50 text-zinc-900;
+    }
+
+    ::selection {
+        @apply bg-brand-600/20 text-brand-950;
+    }
+}

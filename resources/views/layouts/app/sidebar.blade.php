@@ -11,24 +11,60 @@
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
+                @switch(auth()->user()->role)
+                    @case(\App\Enums\Role::Admin)
+                        <flux:sidebar.group :heading="__('Administrator')" class="grid">
+                            <flux:sidebar.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')" wire:navigate>
+                                {{ __('Dashboard') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="identification" :href="route('admin.librarians.index')" :current="request()->routeIs('admin.librarians.*')" wire:navigate>
+                                {{ __('Librarians') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="users" :href="route('admin.members.index')" :current="request()->routeIs('admin.members.*')" wire:navigate>
+                                {{ __('Members') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="tag" :href="route('admin.categories.index')" :current="request()->routeIs('admin.categories.*')" wire:navigate>
+                                {{ __('Categories') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="chart-bar" :href="route('admin.reports.index')" :current="request()->routeIs('admin.reports.*')" wire:navigate>
+                                {{ __('Reports') }}
+                            </flux:sidebar.item>
+                        </flux:sidebar.group>
+                        @break
+
+                    @case(\App\Enums\Role::Librarian)
+                        <flux:sidebar.group :heading="__('Librarian')" class="grid">
+                            <flux:sidebar.item icon="book-open" :href="route('librarian.books.index')" :current="request()->routeIs('librarian.books.*')" wire:navigate>
+                                {{ __('Books') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="bookmark" :href="route('librarian.reservations.index')" :current="request()->routeIs('librarian.reservations.*')" wire:navigate>
+                                {{ __('Reservations') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="arrows-right-left" :href="route('librarian.loans.index')" :current="request()->routeIs('librarian.loans.index')" wire:navigate>
+                                {{ __('Loans') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="plus" :href="route('librarian.loans.create')" :current="request()->routeIs('librarian.loans.create')" wire:navigate>
+                                {{ __('Walk-In Borrowing') }}
+                            </flux:sidebar.item>
+                        </flux:sidebar.group>
+                        @break
+
+                    @default
+                        <flux:sidebar.group :heading="__('Library')" class="grid">
+                            <flux:sidebar.item icon="book-open" :href="route('member.books.index')" :current="request()->routeIs('member.books.*')" wire:navigate>
+                                {{ __('Book Catalog') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="bookmark" :href="route('member.reservations.index')" :current="request()->routeIs('member.reservations.*')" wire:navigate>
+                                {{ __('My Reservations') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="clock" :href="route('member.loans.index')" :current="request()->routeIs('member.loans.*')" wire:navigate>
+                                {{ __('My Borrowings') }}
+                            </flux:sidebar.item>
+                        </flux:sidebar.group>
+                @endswitch
             </flux:sidebar.nav>
 
             <flux:spacer />
-
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
-                </flux:sidebar.item>
-            </flux:sidebar.nav>
 
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
         </flux:sidebar>
