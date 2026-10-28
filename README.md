@@ -49,7 +49,7 @@ These references are used for layout inspiration only. myBook uses its own name,
 
 ## Getting Started
 
-Requirements: PHP 8.3+, Composer, Node.js, and Docker (for PostgreSQL).
+Requirements: PHP 8.4+, Composer, Node.js, and Docker (for PostgreSQL).
 
 ```bash
 git clone https://github.com/farrelsatria/EF234301_WebPro_MID_5025251138_5025251178.git
