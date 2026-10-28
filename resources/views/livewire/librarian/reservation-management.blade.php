@@ -1,4 +1,6 @@
-<x-layouts::librarian title="Reservation Management" subtitle="Review online member reservations, approve pickup requests, and confirm collections.">
+<div>
+    <x-admin.flash />
+
     <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <x-admin.stat-card
             label="Pending Approvals"
@@ -96,7 +98,7 @@
 
                     <tbody class="divide-y divide-zinc-100">
                         @foreach ($reservations as $reservation)
-                            <tr class="transition hover:bg-zinc-50/60">
+                            <tr wire:key="reservation-{{ $reservation->id }}" class="transition hover:bg-zinc-50/60">
                                 <!-- Member Info -->
                                 <td class="px-5 py-4">
                                     <div class="flex items-center gap-3">
@@ -162,7 +164,7 @@
                                                 wire:click="reject({{ $reservation->id }})"
                                                 wire:confirm="Reject this reservation request?"
                                                 class="inline-flex items-center rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-rose-600
-                                                ￹shadow-sm transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+                                                shadow-sm transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
                                             >
                                                 Reject
                                             </button>
@@ -171,10 +173,9 @@
                                         <button
                                             type="button"
                                             wire:click="confirmPickup({{ $reservation->id }})"
-                                            wire:confirm="Confirm pickup for {{ $reservation->member->name }}? This will mark the reservation as completed and create a new
-                                            ￹loan record."
+                                            wire:confirm="Confirm this pickup? The reservation will be completed and a loan record will be created."
                                             class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition
-                                            ￹hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                                            hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                                         >
                                             Confirm pickup
                                         </button>
@@ -195,4 +196,4 @@
             @endif
         @endif
     </div>
-</x-layouts::librarian>
+</div>

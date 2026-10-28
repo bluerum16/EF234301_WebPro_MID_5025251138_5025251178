@@ -5,10 +5,12 @@ namespace App\Livewire\Librarian;
 use App\Enums\LoanStatus;
 use App\Models\Loan;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts::librarian')]
 #[Title('Loan Monitoring')]
 class LoanMonitoring extends Component
 {

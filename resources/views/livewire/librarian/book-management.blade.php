@@ -1,14 +1,15 @@
-<x-layouts::librarian title="Book Management" subtitle="View, add, edit, and manage the library's book catalog and stock.">
-    <x-slot:actions>
+<div>
+    <x-admin.flash />
+
+    <div class="mb-4 flex justify-end">
         <button
             type="button"
             wire:click="create"
-            class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700
-            focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30"
+            class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30"
         >
             + Add book
         </button>
-    </x-slot:actions>
+    </div>
 
     <div class="overflow-hidden rounded-lg border border-zinc-200/80 bg-white shadow-sm">
         <div class="flex flex-col gap-4 border-b border-zinc-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
@@ -76,7 +77,7 @@
 
                     <tbody class="divide-y divide-zinc-100">
                         @foreach ($books as $book)
-                            <tr class="transition hover:bg-zinc-50/60">
+                            <tr wire:key="book-{{ $book->id }}" class="transition hover:bg-zinc-50/60">
                                 <td class="px-5 py-4">
                                     <div class="min-w-0 max-w-xs">
                                         <p class="truncate font-medium text-zinc-900">{{ $book->title }}</p>
@@ -116,7 +117,7 @@
                                         <button
                                             type="button"
                                             wire:click="delete({{ $book->id }})"
-                                            wire:confirm="Delete '{{ $book->title }}'? This action cannot be undone."
+                                            wire:confirm="Delete this book? This action cannot be undone."
                                             class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-50
                                             hover:text-rose-700"
                                         >
@@ -273,7 +274,7 @@
                                 rows="3"
                                 placeholder="Brief synopsis or notes about the book..."
                                 class="mt-1.5 block w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition
-                                ￹placeholder:text-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10"
+                                placeholder:text-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10"
                 ></textarea>
 
                 @error('description')
@@ -294,7 +295,7 @@
                         <button
                 type="submit"
                 class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700
-                            ￹focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30"
+                            focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30"
                         >
                 <span wire:loading.remove wire:target="save">
                                 {{ $editingBookId ? 'Save changes' : 'Add book' }}
@@ -309,4 +310,4 @@
             </div>
         </div>
     @endif
-</x-layouts::librarian>
+</div>

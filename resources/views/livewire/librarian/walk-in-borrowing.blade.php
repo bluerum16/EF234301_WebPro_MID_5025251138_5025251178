@@ -1,10 +1,11 @@
-<x-layouts::librarian title="Walk-In Borrowing" subtitle="Record an on-the-spot physical book borrowing for an active library member.">
-    <x-slot:actions>
-        <a href="{{ route('librarian.loans.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium
-        text-zinc-700 shadow-sm transition hover:bg-zinc-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20">
+<div>
+    <x-admin.flash />
+
+    <div class="mb-4 flex justify-end">
+        <a href="{{ route('librarian.loans.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20">
             Back to loans
         </a>
-    </x-slot:actions>
+    </div>
 
     <div class="max-w-3xl">
         <form wire:submit="save" class="overflow-hidden rounded-lg border border-zinc-200/80 bg-white shadow-sm">
@@ -82,7 +83,7 @@
                         type="date"
                         wire:model="due_date"
                         class="mt-1.5 block w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition focus:border-brand-500
-                        ￹focus:outline-none focus:ring-4 focus:ring-brand-500/10"
+                        focus:outline-none focus:ring-4 focus:ring-brand-500/10"
             />
 
             @error('due_date')
@@ -102,7 +103,7 @@
                 <button
             type="submit"
             class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700
-                    ￹focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30"
+                    focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30"
                 >
             <span wire:loading.remove wire:target="save">Record borrowing</span>
             <span wire:loading wire:target="save" class="inline-flex items-center gap-2">
@@ -113,4 +114,4 @@
             </div>
         </form>
     </div>
-</x-layouts::librarian>
+</div>

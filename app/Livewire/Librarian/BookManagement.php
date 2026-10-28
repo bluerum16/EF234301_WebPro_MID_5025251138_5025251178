@@ -2,16 +2,16 @@
 
 namespace App\Livewire\Librarian;
 
-use App\Enums\LoanStatus;
-use App\Enums\ReservationStatus;
 use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts::librarian')]
 #[Title('Book Management')]
 class BookManagement extends Component
 {
@@ -136,11 +136,11 @@ class BookManagement extends Component
     {
         $book = Book::findOrFail($id);
 
-        $hasActiveLoans = $book->loans()->where('status', LoanStatus::Borrowed)->exists();
-        $hasActiveReservations = $book->reservations()->where('status', ReservationStatus::ReadyForPickup)->exists();
+        $hasLoans = $book->loans()->exists();
+        $hasReservations = $book->reservations()->exists();
 
-        if ($hasActiveLoans || $hasActiveReservations) {
-            session()->flash('error', 'Cannot delete book, this book has active loans or reservations.');
+        if ($hasLoans || $hasReservations) {
+            session()->flash('error', 'Cannot delete this book because it has loan or reservation history.');
 
             return;
         }

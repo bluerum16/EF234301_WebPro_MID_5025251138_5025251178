@@ -1,12 +1,20 @@
-@props([
-    'title' => 'Librarian Dashboard',
-    'subtitle' => null,
-])
+@php
+    $title = $title ?? 'Librarian desk';
+
+    $subtitle = $subtitle ?? match (true) {
+        request()->routeIs('librarian.books.*') => 'View, add, edit, and manage the library\'s book catalog and stock.',
+        request()->routeIs('librarian.reservations.*') => 'Review online member reservations, approve pickup requests, and confirm collections.',
+        request()->routeIs('librarian.loans.create') => 'Record an on-the-spot physical book borrowing for an active library member.',
+        request()->routeIs('librarian.loans.*') => 'Track all library borrowings, monitor overdue loans, and process returns.',
+        default => null,
+    };
+@endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.admin-head', ['title' => $title])
+        @livewireStyles
     </head>
     <body class="min-h-screen bg-zinc-50 font-sans text-zinc-900 antialiased">
         <a href="#librarian-content" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4
@@ -159,8 +167,6 @@
                             @endif
                         </div>
 
-                        <x-admin.flash />
-
                         {{ $slot }}
                     </div>
                 </main>
@@ -215,9 +221,12 @@
                         }
             });
                 });
+                document.addEventListener('click', (event) => {
+                    const dismiss = event.target.closest('[data-dismiss]');
 
-                document.querySelectorAll('[data-dismiss]').forEach((button) => {
-            button.addEventListener('click', () => button.closest('[data-flash]')?.remove());
+                    if (dismiss) {
+                        dismiss.closest('[data-flash]')?.remove();
+                    }
                 });
 
                 document.querySelectorAll('form[data-confirm]').forEach((form) => {
@@ -229,5 +238,7 @@
                 });
             })();
         </script>
+
+        @livewireScripts
     </body>
 </html>

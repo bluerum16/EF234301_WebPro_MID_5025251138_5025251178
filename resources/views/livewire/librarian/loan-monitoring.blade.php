@@ -1,10 +1,11 @@
-<x-layouts::librarian title="Loan Monitoring" subtitle="Track all library borrowings, monitor overdue loans, and process returns.">
-    <x-slot:actions>
-        <a href="{{ route('librarian.loans.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm
-        transition hover:bg-brand-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30">
+<div>
+    <x-admin.flash />
+
+    <div class="mb-4 flex justify-end">
+        <a href="{{ route('librarian.loans.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30">
             + New walk-in loan
         </a>
-    </x-slot:actions>
+    </div>
 
     <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <x-admin.stat-card
@@ -97,7 +98,7 @@
 
                     <tbody class="divide-y divide-zinc-100">
                         @foreach ($loans as $loan)
-                            <tr class="transition hover:bg-zinc-50/60">
+                            <tr wire:key="loan-{{ $loan->id }}" class="transition hover:bg-zinc-50/60">
                                 <td class="px-5 py-4">
                                     <div class="flex items-center gap-3">
                                         <x-admin.avatar :initials="$loan->member->initials()" size="sm" tone="zinc" />
@@ -154,9 +155,9 @@
                                         <button
                                             type="button"
                                             wire:click="returnBook({{ $loan->id }})"
-                                            wire:confirm="Confirm return for '{{ $loan->book->title }}' borrowed by {{ $loan->member->name }}?"
+                                            wire:confirm="Confirm this return? The loan will be marked as returned."
                                             class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700
-                                            ￹shadow-sm transition hover:bg-zinc-50 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                                            shadow-sm transition hover:bg-zinc-50 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                                         >
                                             Process return
                                         </button>
@@ -178,4 +179,4 @@
         @endif
     </div>
 
-</x-layouts::librarian>
+</div>
