@@ -35,7 +35,7 @@ myBook supports the daily operations of a library. It has three user roles:
 
 ## Tech Stack
 
-- **Front-End:** Blade, Livewire, Flux UI, Tailwind CSS, JavaScript
+- **Front-End:** Blade, Livewire, Tailwind CSS, JavaScript
 - **Back-End:** Laravel, PHP
 - **Database:** PostgreSQL
 - **Version Control:** Git, GitHub
