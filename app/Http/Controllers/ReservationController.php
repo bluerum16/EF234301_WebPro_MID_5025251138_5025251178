@@ -52,7 +52,7 @@ class ReservationController extends Controller
         $book = Book::findOrFail($validated['books_id']);
 
         if ($book->availableStock() <= 0) {
-            return back()->with('error', 'Buku sedang tidak tersedia untuk direservasi.');
+            return back()->with('error', 'This book is currently unavailable for reservation.');
         }
 
         $hasActiveReservation = Reservation::query()
@@ -62,7 +62,7 @@ class ReservationController extends Controller
             ->exists();
 
         if ($hasActiveReservation) {
-            return back()->with('error', 'Anda sudah memiliki reservasi aktif untuk buku ini.');
+            return back()->with('error', 'You already have an active reservation for this book.');
         }
 
         $hasActiveLoan = Loan::query()
@@ -72,7 +72,7 @@ class ReservationController extends Controller
             ->exists();
 
         if ($hasActiveLoan) {
-            return back()->with('error', 'Anda sedang meminjam buku ini.');
+            return back()->with('error', 'You are currently borrowing this book.');
         }
 
         Reservation::create([
@@ -81,7 +81,7 @@ class ReservationController extends Controller
             'books_id' => $book->id,
         ]);
 
-        return redirect()->route('member.reservations.index')->with('success', 'Reservasi berhasil diajukan.');
+        return redirect()->route('member.reservations.index')->with('success', 'Reservation request submitted successfully.');
     }
 
     public function cancel(Request $request, Reservation $reservation): RedirectResponse
@@ -89,13 +89,13 @@ class ReservationController extends Controller
         abort_if($reservation->users_id !== $request->user()->id, 403);
 
         if (! in_array($reservation->status, [ReservationStatus::Pending, ReservationStatus::ReadyForPickup], true)) {
-            return back()->with('error', 'Reservasi tidak dapat dibatalkan.');
+            return back()->with('error', 'This reservation cannot be cancelled.');
         }
 
         $reservation->update([
             'status' => ReservationStatus::Cancelled,
         ]);
 
-        return back()->with('success', 'Reservasi berhasil dibatalkan.');
+        return back()->with('success', 'Reservation cancelled successfully.');
     }
 }

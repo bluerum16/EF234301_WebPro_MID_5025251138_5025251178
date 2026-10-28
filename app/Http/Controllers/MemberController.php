@@ -41,7 +41,7 @@ class MemberController extends Controller
             'is_active' => ! $member->is_active,
         ]);
 
-        $message = $member->is_active ? 'Akun member diaktifkan.' : 'Akun member dinonaktifkan.';
+        $message = $member->is_active ? 'Member account activated successfully.' : 'Member account deactivated successfully.';
 
         return back()->with('success', $message);
     }

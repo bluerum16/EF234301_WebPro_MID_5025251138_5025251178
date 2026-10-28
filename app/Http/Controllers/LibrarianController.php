@@ -55,7 +55,7 @@ class LibrarianController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('admin.librarians.index')->with('success', 'Pustakawan berhasil ditambahkan.');
+        return redirect()->route('admin.librarians.index')->with('success', 'Librarian account created successfully.');
     }
 
     public function edit(User $librarian): View
@@ -84,7 +84,7 @@ class LibrarianController extends Controller
 
         $librarian->save();
 
-        return redirect()->route('admin.librarians.index')->with('success', 'Data pustakawan berhasil diperbarui.');
+        return redirect()->route('admin.librarians.index')->with('success', 'Librarian account updated successfully.');
     }
 
     public function destroy(User $librarian): RedirectResponse
@@ -95,11 +95,11 @@ class LibrarianController extends Controller
         $hasReservations = Reservation::where('processed_by', $librarian->id)->exists();
 
         if ($hasLoans || $hasReservations) {
-            return redirect()->route('admin.librarians.index')->with('error', 'Pustakawan tidak dapat dihapus karena memiliki riwayat transaksi pelayanan.');
+            return redirect()->route('admin.librarians.index')->with('error', 'Librarian cannot be deleted because they have associated transaction records.');
         }
 
         $librarian->delete();
 
-        return redirect()->route('admin.librarians.index')->with('success', 'Akun pustakawan berhasil dihapus.');
+        return redirect()->route('admin.librarians.index')->with('success', 'Librarian account deleted successfully.');
     }
 }

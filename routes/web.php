@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Role;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LibrarianController;
@@ -47,8 +48,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware('role:member')->name('member.')->group(function () {
-        Route::view('books', 'coming-soon', ['title' => 'Book Catalog'])->name('books.index');
-        Route::view('books/{book}', 'coming-soon', ['title' => 'Book Details'])->name('books.show');
+        Route::get('books', [BookController::class, 'index'])->name('books.index');
+        Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
         Route::get('my/reservations', [ReservationController::class, 'index'])->name('reservations.index');
         Route::post('my/reservations', [ReservationController::class, 'store'])->name('reservations.store');
         Route::patch('my/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');

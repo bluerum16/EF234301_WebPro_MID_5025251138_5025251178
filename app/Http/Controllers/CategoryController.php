@@ -38,7 +38,7 @@ class CategoryController extends Controller
 
         Category::create($validated);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori buku berhasil ditambahkan.');
+        return redirect()->route('admin.categories.index')->with('success', 'Book category created successfully.');
     }
 
     public function edit(Category $category): View
@@ -55,17 +55,17 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori buku berhasil diperbarui.');
+        return redirect()->route('admin.categories.index')->with('success', 'Book category updated successfully.');
     }
 
     public function destroy(Category $category): RedirectResponse
     {
         if ($category->books()->exists()) {
-            return redirect()->route('admin.categories.index')->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh buku.');
+            return redirect()->route('admin.categories.index')->with('error', 'Category cannot be deleted because books are currently assigned to it.');
         }
 
         $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori buku berhasil dihapus.');
+        return redirect()->route('admin.categories.index')->with('success', 'Book category deleted successfully.');
     }
 }

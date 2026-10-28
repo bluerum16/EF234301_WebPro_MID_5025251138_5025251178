@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/css/member.css',
                 'resources/css/admin.css',
                 'resources/css/auth.css',
+                'resources/css/catalog.css',
                 'resources/js/app.js',
             ],
             refresh: true,
