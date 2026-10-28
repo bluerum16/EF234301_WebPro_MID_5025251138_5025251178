@@ -10,10 +10,12 @@ use App\Models\Reservation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts::librarian')]
 #[Title('Reservation Management')]
 class ReservationManagement extends Component
 {

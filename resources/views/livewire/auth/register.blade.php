@@ -1,69 +1,108 @@
-<x-layouts::auth :title="__('Register')">
-    <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+<x-layouts::auth.plain :title="__('Register')">
+    <div class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight text-zinc-900">Create an account</h1>
+            <p class="mt-1 text-sm text-zinc-500">Join {{ config('app.name', 'myBook') }} to reserve books and track your borrowings.</p>
+        </div>
 
-        <!-- Session Status -->
-        <x-auth-session-status class="text-center" :status="session('status')" />
-
-        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('register.store') }}" class="mt-6 space-y-5">
             @csrf
-            <!-- Name -->
-            <flux:input
-                name="name"
-                :label="__('Name')"
-                :value="old('name')"
-                type="text"
-                required
-                autofocus
-                autocomplete="name"
-                :placeholder="__('Full name')"
-            />
 
-            <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
-                type="email"
-                required
-                autocomplete="email"
-                placeholder="email@example.com"
-            />
+            <div>
+                <label for="name" class="block text-sm font-medium text-zinc-700">Full name</label>
 
-            <!-- Password -->
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Password')"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
+                <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value="{{ old('name') }}"
+                    required
+                    autofocus
+                    autocomplete="name"
+                    placeholder="Your full name"
+                    @class([
+                        'mt-1.5 block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition placeholder:text-zinc-400 focus:outline-none focus:ring-4',
+                        'border-rose-300 focus:border-rose-400 focus:ring-rose-500/10' => $errors->has('name'),
+                        'border-zinc-300 focus:border-brand-500 focus:ring-brand-500/10' => ! $errors->has('name'),
+                    ])
+                />
 
-            <!-- Confirm Password -->
-            <flux:input
-                name="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Confirm password')"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
-
-            <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
-                    {{ __('Create account') }}
-                </flux:button>
+                @error('name')
+                    <p class="mt-1.5 text-xs font-medium text-rose-600">{{ $message }}</p>
+                @enderror
             </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-zinc-700">Email address</label>
+
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value="{{ old('email') }}"
+                    required
+                    autocomplete="email"
+                    placeholder="you@example.com"
+                    @class([
+                        'mt-1.5 block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition placeholder:text-zinc-400 focus:outline-none focus:ring-4',
+                        'border-rose-300 focus:border-rose-400 focus:ring-rose-500/10' => $errors->has('email'),
+                        'border-zinc-300 focus:border-brand-500 focus:ring-brand-500/10' => ! $errors->has('email'),
+                    ])
+                />
+
+                @error('email')
+                    <p class="mt-1.5 text-xs font-medium text-rose-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-zinc-700">Password</label>
+
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    placeholder="••••••••"
+                    @class([
+                        'mt-1.5 block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition placeholder:text-zinc-400 focus:outline-none focus:ring-4',
+                        'border-rose-300 focus:border-rose-400 focus:ring-rose-500/10' => $errors->has('password'),
+                        'border-zinc-300 focus:border-brand-500 focus:ring-brand-500/10' => ! $errors->has('password'),
+                    ])
+                />
+
+                <p class="mt-1.5 text-xs text-zinc-500">Use a secure password and confirm it below.</p>
+
+                @error('password')
+                    <p class="mt-1.5 text-xs font-medium text-rose-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-zinc-700">Confirm password</label>
+
+                <input
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    placeholder="••••••••"
+                    class="mt-1.5 block w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition placeholder:text-zinc-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10"
+                />
+            </div>
+
+            <button type="submit" class="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30" data-test="register-user-button">
+                Create account
+            </button>
         </form>
 
-        <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-            <span>{{ __('Already have an account?') }}</span>
-            <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
-        </div>
+        <p class="mt-6 text-center text-sm text-zinc-500">
+            Already have an account?
+            <a href="{{ route('login') }}" class="font-medium text-brand-700 transition hover:text-brand-800">
+                Log in
+            </a>
+        </p>
     </div>
-</x-layouts::auth>
+</x-layouts::auth.plain>

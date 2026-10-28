@@ -11,9 +11,11 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Layout('layouts::librarian')]
 #[Title('Walk-In Borrowing')]
 class WalkInBorrowing extends Component
 {

@@ -1,58 +1,95 @@
-<x-layouts::auth :title="__('Log in')">
-    <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+<x-layouts::auth.plain :title="__('Log in')">
+    <div class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight text-zinc-900">Log in</h1>
+            <p class="mt-1 text-sm text-zinc-500">Use your {{ config('app.name', 'myBook') }} account to continue.</p>
+        </div>
 
-        <!-- Session Status -->
-        <x-auth-session-status class="text-center" :status="session('status')" />
+        @if (session('status'))
+            <div class="mt-5 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                {{ session('status') }}
+            </div>
+        @endif
 
-
-        <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('login.store') }}" class="mt-6 space-y-5">
             @csrf
 
-            <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
-                type="email"
-                required
-                autofocus
-                autocomplete="email"
-                placeholder="email@example.com"
-            />
+            <div>
+                <label for="email" class="block text-sm font-medium text-zinc-700">Email address</label>
 
-            <!-- Password -->
-            <div class="relative">
-                <flux:input
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value="{{ old('email') }}"
+                    required
+                    autofocus
+                    autocomplete="email"
+                    placeholder="you@example.com"
+                    @class([
+                        'mt-1.5 block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition placeholder:text-zinc-400 focus:outline-none focus:ring-4',
+                        'border-rose-300 focus:border-rose-400 focus:ring-rose-500/10' => $errors->has('email'),
+                        'border-zinc-300 focus:border-brand-500 focus:ring-brand-500/10' => ! $errors->has('email'),
+                    ])
+                />
+
+                @error('email')
+                    <p class="mt-1.5 text-xs font-medium text-rose-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between gap-3">
+                    <label for="password" class="block text-sm font-medium text-zinc-700">Password</label>
+
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-xs font-medium text-brand-700 transition hover:text-brand-800">
+                            Forgot password?
+                        </a>
+                    @endif
+                </div>
+
+                <input
+                    id="password"
                     name="password"
-                    :label="__('Password')"
                     type="password"
                     required
                     autocomplete="current-password"
-                    :placeholder="__('Password')"
-                    viewable
+                    placeholder="••••••••"
+                    @class([
+                        'mt-1.5 block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-sm transition placeholder:text-zinc-400 focus:outline-none focus:ring-4',
+                        'border-rose-300 focus:border-rose-400 focus:ring-rose-500/10' => $errors->has('password'),
+                        'border-zinc-300 focus:border-brand-500 focus:ring-brand-500/10' => ! $errors->has('password'),
+                    ])
                 />
 
-                @if (Route::has('password.request'))
-                    <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
-                        {{ __('Forgot your password?') }}
-                    </flux:link>
-                @endif
+                @error('password')
+                    <p class="mt-1.5 text-xs font-medium text-rose-600">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Remember Me -->
-            <flux:checkbox name="remember" :label="__('Remember me')" :checked="old('remember')" />
+            <label class="flex items-center gap-2 text-sm text-zinc-600">
+                <input
+                    type="checkbox"
+                    name="remember"
+                    value="1"
+                    @checked(old('remember'))
+                    class="size-4 rounded border-zinc-300 accent-brand-600"
+                />
 
-            <div class="flex items-center justify-end">
-                <flux:button variant="primary" type="submit" class="w-full" data-test="login-button">
-                    {{ __('Log in') }}
-                </flux:button>
-            </div>
+                Remember me
+            </label>
+
+            <button type="submit" class="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30" data-test="login-button">
+                Log in
+            </button>
         </form>
 
-        <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
-            <span>{{ __('Don\'t have an account?') }}</span>
-            <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
-        </div>
+        <p class="mt-6 text-center text-sm text-zinc-500">
+            Don't have an account?
+            <a href="{{ route('register') }}" class="font-medium text-brand-700 transition hover:text-brand-800">
+                Register
+            </a>
+        </p>
     </div>
-</x-layouts::auth>
+</x-layouts::auth.plain>
