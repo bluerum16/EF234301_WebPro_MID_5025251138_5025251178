@@ -2,8 +2,17 @@
 
 use App\Enums\Role;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LibrarianController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\ReportController;
 use App\Livewire\Librarian\BookManagement;
 use App\Livewire\Librarian\LoanMonitoring;
+use App\Livewire\Librarian\ReservationManagement;
+use App\Livewire\Librarian\WalkInBorrowing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,18 +28,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::view('dashboard', 'dashboard')->name('dashboard');
-        Route::view('librarians', 'coming-soon', ['title' => 'Librarians'])->name('librarians.index');
-        Route::view('members', 'coming-soon', ['title' => 'Members'])->name('members.index');
-        Route::view('categories', 'coming-soon', ['title' => 'Categories'])->name('categories.index');
-        Route::view('reports', 'coming-soon', ['title' => 'Reports'])->name('reports.index');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('librarians', LibrarianController::class);
+        Route::get('members', [MemberController::class, 'index'])->name('members.index');
+        Route::patch('members/{member}/toggle', [MemberController::class, 'toggle'])->name('members.toggle');
+        Route::resource('categories', CategoryController::class);
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     });
 
     Route::middleware('role:librarian')->prefix('librarian')->name('librarian.')->group(function () {
         Route::get('books', BookManagement::class)->name('books.index');
-        Route::view('reservations', 'coming-soon', ['title' => 'Reservations'])->name('reservations.index');
+        Route::get('reservations', ReservationManagement::class)->name('reservations.index');
         Route::get('loans', LoanMonitoring::class)->name('loans.index');
-        Route::view('loans/create', 'coming-soon', ['title' => 'Walk-In Borrowing'])->name('loans.create');
+        Route::get('loans/create', WalkInBorrowing::class)->name('loans.create');
     });
 
     Route::middleware('role:member')->name('member.')->group(function () {
@@ -38,6 +48,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
         Route::view('my/reservations', 'coming-soon', ['title' => 'My Reservations'])->name('reservations.index');
         Route::view('my/loans', 'coming-soon', ['title' => 'My Borrowings'])->name('loans.index');
+        Route::view('books', 'coming-soon', ['title' => 'Book Catalog'])->name('books.index');
+        Route::view('books/{book}', 'coming-soon', ['title' => 'Book Details'])->name('books.show');
+        Route::get('my/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+        Route::post('my/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+        Route::patch('my/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+        Route::get('my/loans', [LoanController::class, 'index'])->name('loans.index');
     });
 });
 
