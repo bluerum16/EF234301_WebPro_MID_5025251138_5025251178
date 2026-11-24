@@ -54,6 +54,13 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'jsp_url' => env(
+        'MYBOOK_JSP_URL',
+        env('APP_ENV') === 'local' && env('MYBOOK_BACKEND') === 'laravel'
+            ? 'http://localhost:8080'
+            : null,
+    ),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
@@ -65,7 +72,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
 
     /*
     |--------------------------------------------------------------------------

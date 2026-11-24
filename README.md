@@ -1,5 +1,7 @@
 # myBook
 
+> **Quiz 2 — JSP + Laravel:** Jakarta Server Pages frontend connected to a Laravel backend with 8 CRUD modules. Start Docker Desktop, run `docker compose up -d db`, then `bash jsp-app/start.sh`, and open http://localhost:8080. See the [PostgreSQL Docker instructions](jsp-app/README.md#postgresql-with-docker). The original Laravel midterm project is included.
+
 **by Farrel & Fazli**
 
 myBook is a library management website built for the **Midterm Exam of Web Programming (EF234301), Class D**, Institut Teknologi Sepuluh Nopember, 2026.

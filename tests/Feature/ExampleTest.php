@@ -11,3 +11,17 @@ test('authenticated users are redirected from home to the dashboard', function (
         ->get(route('home'))
         ->assertRedirect(route('dashboard'));
 });
+
+test('hybrid browser routes redirect to JSP before rendering Blade assets', function () {
+    config(['app.jsp_url' => 'http://localhost:8080']);
+
+    $this->get('/')->assertRedirect('http://localhost:8080/app/dashboard');
+    $this->get('/login')->assertRedirect('http://localhost:8080/app/dashboard');
+    $this->get('/books')->assertRedirect('http://localhost:8080/app/dashboard');
+});
+
+test('hybrid redirect leaves JSON API responses unchanged', function () {
+    config(['app.jsp_url' => 'http://localhost:8080']);
+
+    $this->getJson('/api/jsp/me')->assertUnauthorized()->assertJsonStructure(['message']);
+});

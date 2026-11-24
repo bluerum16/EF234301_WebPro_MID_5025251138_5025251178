@@ -1,0 +1,11 @@
+<%@ page pageEncoding="UTF-8" %>
+</main>
+<footer class="footer">
+    <span>© <%= java.time.Year.now() %> myBook · Library Management System</span>
+    <span>Web Programming · ITS</span>
+</footer>
+</div>
+<div class="menu-overlay" hidden></div>
+</body>
+
+</html>

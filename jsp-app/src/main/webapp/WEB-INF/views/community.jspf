@@ -1,0 +1,126 @@
+<%@ page pageEncoding="UTF-8" %>
+
+<%
+    Map<String, Object> communityData = (Map<String, Object>) request.getAttribute("community");
+    Map<String, Object> ownReview = (Map<String, Object>) communityData.get("own_review");
+    List<Map<String, Object>> bookReviews = (List<Map<String, Object>>) communityData.get("reviews");
+    boolean isFavorite = Boolean.TRUE.equals(communityData.get("favorite"));
+    Map<String, Object> reviewInput = ownReview == null ? Map.of() : ownReview;
+    Object reviewDraft = session.getAttribute("reviewDraft");
+    if (
+        reviewDraft instanceof Map &&
+        String.valueOf(((Map<?, ?>) reviewDraft).get("book_id")).equals(String.valueOf(row.get("id")))
+    ) {
+        reviewInput = (Map<String, Object>) reviewDraft;
+        session.removeAttribute("reviewDraft");
+    }
+    int reviewPage = ((Number) communityData.get("page")).intValue();
+%>
+
+<section class="panel community-panel" id="community" aria-labelledby="community-title">
+    <div class="panel-heading">
+        <div>
+            <h2 id="community-title">Book Reviews</h2>
+            <p>Ratings and reviews from library members.</p>
+        </div>
+        <% if (me.member()) { %>
+        <form method="post" action="<%= base %>/app/community/favorite">
+            <input type="hidden" name="csrf" value="<%= escape(session.getAttribute("csrf")) %>">
+            <input type="hidden" name="book_id" value="<%= escape(row.get("id")) %>">
+            <input type="hidden" name="intent" value="<%= isFavorite ? "remove" : "add" %>">
+            <button class="button <%= isFavorite ? "favorite-selected" : "secondary" %>" aria-pressed="<%= isFavorite %>"><%= icon("heart") %><%= isFavorite ? "Remove from favorites" : "Save to favorites" %>
+            </button>
+        </form>
+        <% } %>
+    </div>
+    <div class="rating-summary">
+        <span class="rating-icon"><%= icon("star") %></span>
+        <div>
+            <strong><%= communityData.get("average") == null ? "Not yet rated" : String.format( Locale.forLanguageTag("en-US"), "%.1f", ((Number) communityData.get("average")).doubleValue() ) + " / 5" %></strong>
+            <small><%= communityData.get("count") %> reader reviews</small>
+        </div>
+    </div>
+
+    <% if (me.member()) { %>
+    <div class="review-editor">
+        <h3><%= ownReview == null ? "Write a review" : "Edit your review" %></h3>
+        <p>One review per book. You can edit or delete your review at any time.</p>
+        <form id="review-form" method="post" action="<%= base %>/app/community/review">
+            <input type="hidden" name="csrf" value="<%= escape(session.getAttribute("csrf")) %>">
+            <input type="hidden" name="book_id" value="<%= escape(row.get("id")) %>">
+            <input type="hidden" name="mode" value="<%= ownReview == null ? "create" : "update" %>">
+            <div class="field rating-field">
+                <label for="review-rating">Rating *</label>
+                <select id="review-rating" name="rating" required>
+                    <option value="">Select a rating</option>
+                    <% for (int stars = 1; stars <= 5; stars++) { %>
+                    <option value="<%= stars %>" <%= String.valueOf(reviewInput.get("rating")).equals(String.valueOf(stars)) ? "selected" : "" %>><%= stars %> / 5 — <%= stars == 1 ? "Poor" : stars == 2 ? "Fair" : stars == 3 ? "Good" : stars == 4 ? "Very good" : "Excellent" %>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="field">
+                <label for="review-comment">Review *</label>
+                <textarea id="review-comment" name="comment" rows="4" maxlength="1000" required placeholder="What did you think of this book?"><%= escape(reviewInput.get("comment")) %></textarea>
+                <small class="field-hint">Up to 1,000 characters.</small>
+            </div>
+            <div class="review-actions">
+                <button class="button primary"><%= icon("check") %><%= ownReview == null ? "Submit review" : "Save changes" %></button>
+            </div>
+        </form>
+        <% if (ownReview != null) { %>
+        <form class="delete-review-form" method="post" action="<%= base %>/app/community/delete-review"
+            data-confirm="Delete your review of this book?">
+            <input type="hidden" name="csrf" value="<%= escape(session.getAttribute("csrf")) %>">
+            <input type="hidden" name="book_id" value="<%= escape(row.get("id")) %>">
+            <button class="button danger-button"><%= icon("trash") %>Delete my review</button>
+        </form>
+        <% } %>
+    </div>
+    <% } %>
+
+    <div class="reviews-list">
+        <h3>All reviews</h3>
+        <% if (bookReviews.isEmpty()) { %>
+        <div class="reviews-empty">No reviews on this page.</div>
+        <%
+            }
+            for (var review : bookReviews) {
+        %>
+        <article class="review-card">
+            <div class="review-author">
+                <div class="avatar"><%= escape(review.get("name").toString().substring(0, 1)) %></div>
+                <div>
+                    <strong><%= escape(review.get("name")) %></strong>
+                    <small><%= escape(review.get("updated_at").toString().substring(0, 10)) %></small>
+                </div>
+                <span class="review-stars" aria-label="Rating <%= escape(review.get("rating")) %> out of 5">
+                    <% for (int stars = 0; stars < ((Number) review.get("rating")).intValue(); stars++) { %>
+                    ★
+                    <% } %>
+                    <span><%= escape(review.get("rating")) %>/5</span>
+                </span>
+            </div>
+            <p><%= escape(review.get("comment")) %></p>
+        </article>
+        <% } %>
+    </div>
+
+    <% if (reviewPage > 1 || Boolean.TRUE.equals(communityData.get("has_next"))) { %>
+    <div class="pagination">
+        <span>Reviews · page <%= reviewPage %></span>
+        <div>
+            <% if (reviewPage > 1) { %>
+            <a class="button secondary compact"
+                href="?id=<%= escape(row.get("id")) %>&amp;review_page=<%= reviewPage - 1 %>#community">Previous</a>
+            <%
+                }
+                if (Boolean.TRUE.equals(communityData.get("has_next"))) {
+            %>
+            <a class="button secondary compact"
+                href="?id=<%= escape(row.get("id")) %>&amp;review_page=<%= reviewPage + 1 %>#community">Next</a>
+            <% } %>
+        </div>
+    </div>
+    <% } %>
+</section>

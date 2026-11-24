@@ -1,24 +1,37 @@
 <?php
 
+use App\Http\Middleware\AuthenticateJspToken;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\RedirectToJsp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(prepend: [RedirectToJsp::class]);
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
+            'jsp.token' => AuthenticateJspToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
-    })->create();
+    })
+    ->create();
+
+// Allows isolated QA using only process variables, without opening dotenv files.
+if (getenv('MYBOOK_SKIP_DOTENV') === '1') {
+    $app->useEnvironmentPath(sys_get_temp_dir())->loadEnvironmentFrom('mybook-process-config');
+}
+
+return $app;
