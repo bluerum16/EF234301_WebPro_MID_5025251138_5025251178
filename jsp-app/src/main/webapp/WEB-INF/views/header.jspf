@@ -57,10 +57,11 @@
             <% } %>
 
             <% if (Backend.LARAVEL && me.member()) { %>
-            <a class="nav-item <%= active.equals("favorites") ? "active" : "" %>" href="<%= base %>/app/favorites"><%= icon("heart") %>Book
-                Favorit</a>
+            <a class="nav-item <%= active.equals("favorites") ? "active" : "" %>" href="<%= base %>/app/favorites"><%= icon("heart") %>Favorite Books</a>
             <% } %>
+            <% if (!me.member()) { %>
             <a class="nav-item <%= active.equals("reports") ? "active" : "" %>" href="<%= base %>/app/reports"><%= icon("chart") %>Reports</a>
+            <% } %>
         </nav>
         <div class="sidebar-bottom">
             <div class="avatar"><%= escape(me.name().substring(0, 1)) %></div>

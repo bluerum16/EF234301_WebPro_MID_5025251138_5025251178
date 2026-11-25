@@ -13,7 +13,9 @@
         <h1>Dashboard</h1>
         <p>An overview of the library collection and activity.</p>
     </div>
+    <% if (!me.member()) { %>
     <a class="button secondary" href="<%= base %>/app/reports"><%= icon("chart") %>View reports</a>
+    <% } %>
 </div>
 <section class="overview-banner">
     <div>

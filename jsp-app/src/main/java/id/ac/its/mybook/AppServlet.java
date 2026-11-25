@@ -127,6 +127,10 @@ public final class AppServlet extends HttpServlet {
                 return;
             }
             if (path.equals("/dashboard") || path.equals("/reports")) {
+                if (path.equals("/reports") && actor(req).member()) {
+                    res.sendError(403);
+                    return;
+                }
                 req.setAttribute("data", dashboard(actor(req)));
                 req.setAttribute("page", path.substring(1));
                 view(req, res, path.equals("/reports") ? "reports" : "dashboard");

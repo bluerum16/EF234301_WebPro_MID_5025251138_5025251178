@@ -10,7 +10,7 @@
 <div class="page-heading">
     <div>
         <h1>Library Reports</h1>
-        <p><%= me.member() ? "Your borrowing activity and the library collection." : "Current collection and circulation statistics." %></p>
+        <p>Current collection and circulation statistics.</p>
     </div>
     <button class="button secondary" data-print><%= icon("chart") %>Print / save PDF</button>
 </div>
