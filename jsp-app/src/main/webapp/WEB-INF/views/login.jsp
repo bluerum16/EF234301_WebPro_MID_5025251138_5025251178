@@ -35,7 +35,7 @@
                 </div>
                 <button class="button primary full-width">Sign in</button>
             </form>
-            <p class="login-help">Need an account? Contact the librarian.</p>
+            <p class="login-help">New to myBook? <a href="<%= request.getContextPath() %>/auth/register">Create a member account</a></p>
         </section>
         <p class="login-credit">Farrel Satria Mukti & Fazli Irham Ramadhan Abdillah</p>
     </main>

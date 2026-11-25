@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\JspController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('jsp')->group(function () {
+    Route::post('register', [JspController::class, 'register'])->middleware('throttle:5,1');
     Route::post('login', [JspController::class, 'login'])->middleware('throttle:10,1');
     Route::middleware('jsp.token')->group(function () {
         Route::get('me', [JspController::class, 'me']);

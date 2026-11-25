@@ -47,17 +47,27 @@ public final class Backend {
         TOKEN.remove();
     }
 
-    private static JsonElement call(String method, String path, Object body) throws SQLException {
+    private static JsonElement call(
+        String method,
+        String path,
+        Object body
+    ) throws SQLException {
         try {
             var builder = HttpRequest.newBuilder(URI.create(API + path))
                 .timeout(Duration.ofSeconds(20))
                 .header("Accept", "application/json");
-            if (TOKEN.get() != null) builder.header("Authorization", "Bearer " + TOKEN.get());
+            if (TOKEN.get() != null) builder.header(
+                "Authorization",
+                "Bearer " + TOKEN.get()
+            );
             var publisher =
                 body == null
                     ? HttpRequest.BodyPublishers.noBody()
                     : HttpRequest.BodyPublishers.ofString(JSON.toJson(body));
-            if (body != null) builder.header("Content-Type", "application/json");
+            if (body != null) builder.header(
+                "Content-Type",
+                "application/json"
+            );
             var response = HTTP.send(
                 builder.method(method, publisher).build(),
                 HttpResponse.BodyHandlers.ofString()
@@ -66,20 +76,28 @@ public final class Backend {
             try {
                 json = JsonParser.parseString(response.body());
             } catch (JsonParseException e) {
-                throw new Failure(502, "The Laravel backend returned an invalid JSON response.");
+                throw new Failure(
+                    502,
+                    "The Laravel backend returned an invalid JSON response."
+                );
             }
             if (response.statusCode() >= 400) {
-                String message = "The Laravel backend could not process the request.";
-                if (json.isJsonObject() && json.getAsJsonObject().has("message")) message = json
-                    .getAsJsonObject()
-                    .get("message")
-                    .getAsString();
-                if (response.statusCode() == 422) throw new LibraryService.Validation(message);
+                String message =
+                    "The Laravel backend could not process the request.";
+                if (
+                    json.isJsonObject() && json.getAsJsonObject().has("message")
+                ) message = json.getAsJsonObject().get("message").getAsString();
+                if (
+                    response.statusCode() == 422
+                ) throw new LibraryService.Validation(message);
                 throw new Failure(response.statusCode(), message);
             }
             return json;
         } catch (java.io.IOException e) {
-            throw new Failure(503, "The Laravel backend is unavailable. Start Laravel on port 8000.");
+            throw new Failure(
+                503,
+                "The Laravel backend is unavailable. Start Laravel on port 8000."
+            );
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new Failure(503, "The backend connection was interrupted.");
@@ -104,7 +122,39 @@ public final class Backend {
         );
     }
 
-    public static Actor login(String email, String password, HttpSession session) throws SQLException {
+    public static Actor register(
+        String name,
+        String email,
+        String password,
+        String confirmation,
+        HttpSession session
+    ) throws SQLException {
+        if (!LARAVEL) throw new LibraryService.Validation(
+            "Registration requires the Laravel backend."
+        );
+        var result = call(
+            "POST",
+            "/register",
+            Map.of(
+                "name",
+                name,
+                "email",
+                email,
+                "password",
+                password,
+                "password_confirmation",
+                confirmation
+            )
+        ).getAsJsonObject();
+        session.setAttribute("apiToken", result.get("token").getAsString());
+        return identity(object(result.get("user")));
+    }
+
+    public static Actor login(
+        String email,
+        String password,
+        HttpSession session
+    ) throws SQLException {
         if (LARAVEL) {
             try {
                 var result = call(
@@ -112,7 +162,10 @@ public final class Backend {
                     "/login",
                     Map.of("email", email, "password", password)
                 ).getAsJsonObject();
-                session.setAttribute("apiToken", result.get("token").getAsString());
+                session.setAttribute(
+                    "apiToken",
+                    result.get("token").getAsString()
+                );
                 return identity(object(result.get("user")));
             } catch (Failure e) {
                 if (e.status == 401) return null;
@@ -120,9 +173,17 @@ public final class Backend {
             }
         }
         try (var c = Database.open()) {
-            var rows = Database.query(c, "SELECT * FROM users WHERE email=?", email);
+            var rows = Database.query(
+                c,
+                "SELECT * FROM users WHERE email=?",
+                email
+            );
             if (
-                rows.isEmpty() || !Security.verify(password, rows.get(0).get("password_hash").toString())
+                rows.isEmpty() ||
+                !Security.verify(
+                    password,
+                    rows.get(0).get("password_hash").toString()
+                )
             ) return null;
             return identity(rows.get(0));
         }
@@ -131,7 +192,11 @@ public final class Backend {
     public static Actor current(Actor actor) throws SQLException {
         if (LARAVEL) return identity(object(call("GET", "/me", null)));
         try (var c = Database.open()) {
-            var rows = Database.query(c, "SELECT id,name,role FROM users WHERE id=?", actor.id());
+            var rows = Database.query(
+                c,
+                "SELECT id,name,role FROM users WHERE id=?",
+                actor.id()
+            );
             return rows.isEmpty() ? null : identity(rows.get(0));
         }
     }
@@ -145,22 +210,38 @@ public final class Backend {
     }
 
     public static Map<String, Object> dashboard(Actor a) throws SQLException {
-        return LARAVEL ? object(call("GET", "/dashboard", null)) : LibraryService.dashboard(a);
+        return LARAVEL
+            ? object(call("GET", "/dashboard", null))
+            : LibraryService.dashboard(a);
     }
 
-    public static List<Map<String, Object>> list(Module m, Actor a, String q, int page) throws SQLException {
+    public static List<Map<String, Object>> list(
+        Module m,
+        Actor a,
+        String q,
+        int page
+    ) throws SQLException {
         return LARAVEL
             ? array(
                   call(
                       "GET",
-                      "/" + m.key() + "?page=" + page + "&q=" + URLEncoder.encode(q, StandardCharsets.UTF_8),
+                      "/" +
+                          m.key() +
+                          "?page=" +
+                          page +
+                          "&q=" +
+                          URLEncoder.encode(q, StandardCharsets.UTF_8),
                       null
                   )
               )
             : LibraryService.list(m, a, q, page);
     }
 
-    public static Map<String, Object> get(Module m, long id, Actor a) throws SQLException {
+    public static Map<String, Object> get(
+        Module m,
+        long id,
+        Actor a
+    ) throws SQLException {
         if (!LARAVEL) return LibraryService.get(m, id, a);
         try {
             return object(call("GET", "/" + m.key() + "/" + id, null));
@@ -173,14 +254,28 @@ public final class Backend {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, List<Map<String, Object>>> options(Module m) throws SQLException {
+    public static Map<String, List<Map<String, Object>>> options(
+        Module m
+    ) throws SQLException {
         return LARAVEL
-            ? JSON.fromJson(call("GET", "/" + m.key() + "/options", null), Map.class)
+            ? JSON.fromJson(
+                  call("GET", "/" + m.key() + "/options", null),
+                  Map.class
+              )
             : LibraryService.options(m);
     }
 
-    public static void save(Module m, Long id, Map<String, String> input, Actor a) throws SQLException {
-        if (LARAVEL) call(id == null ? "POST" : "PUT", "/" + m.key() + (id == null ? "" : "/" + id), input);
+    public static void save(
+        Module m,
+        Long id,
+        Map<String, String> input,
+        Actor a
+    ) throws SQLException {
+        if (LARAVEL) call(
+            id == null ? "POST" : "PUT",
+            "/" + m.key() + (id == null ? "" : "/" + id),
+            input
+        );
         else LibraryService.save(m, id, input, a);
     }
 
@@ -189,21 +284,41 @@ public final class Backend {
         else LibraryService.delete(m, id, a);
     }
 
-    public static Map<String, Object> community(long book, int page) throws SQLException {
-        return object(call("GET", "/books/" + book + "/community?page=" + page, null));
+    public static Map<String, Object> community(
+        long book,
+        int page
+    ) throws SQLException {
+        return object(
+            call("GET", "/books/" + book + "/community?page=" + page, null)
+        );
     }
 
-    public static List<Map<String, Object>> favorites(int page) throws SQLException {
+    public static List<Map<String, Object>> favorites(
+        int page
+    ) throws SQLException {
         return array(call("GET", "/favorites?page=" + page, null));
     }
 
-    public static String favorite(long book, boolean remove) throws SQLException {
-        return object(call(remove ? "DELETE" : "POST", "/books/" + book + "/favorite", null))
+    public static String favorite(
+        long book,
+        boolean remove
+    ) throws SQLException {
+        return object(
+            call(
+                remove ? "DELETE" : "POST",
+                "/books/" + book + "/favorite",
+                null
+            )
+        )
             .get("message")
             .toString();
     }
 
-    public static String review(long book, String method, Map<String, String> data) throws SQLException {
+    public static String review(
+        long book,
+        String method,
+        Map<String, String> data
+    ) throws SQLException {
         return object(call(method, "/books/" + book + "/review", data))
             .get("message")
             .toString();

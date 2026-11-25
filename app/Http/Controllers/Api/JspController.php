@@ -27,6 +27,28 @@ class JspController extends Controller
         'loans' => 'loans',
     ];
 
+    public function register(Request $request)
+    {
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'email' => strtolower(trim((string) $request->input('email'))),
+        ]);
+        $v = $request->validate([
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:180|unique:users,email',
+            'password' => 'required|string|min:8|max:160|confirmed',
+        ]);
+        User::query()->create([
+            'name' => trim($v['name']),
+            'email' => $v['email'],
+            'password' => Hash::make($v['password']),
+            'role' => Role::Member,
+            'is_active' => true,
+        ]);
+
+        return $this->login($request)->setStatusCode(201);
+    }
+
     public function login(Request $request)
     {
         $v = $request->validate([
